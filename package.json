@@ -1,0 +1,11 @@
+{
+  "name": "brainrot-detection-api",
+  "version": "1.0.0",
+  "main": "api/jaydens/index.js",
+  "scripts": {
+    "build": "echo 'Build complete'"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

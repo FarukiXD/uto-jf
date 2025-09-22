@@ -1,7 +1,6 @@
 {
   "name": "brainrot-detection-api",
   "version": "1.0.0",
-  "description": "Advanced Brainrot Detection API for Roblox",
   "main": "api/jaydens/index.js",
   "scripts": {
     "build": "echo 'Build complete'"

@@ -1,12 +1,13 @@
 {
-  "name": "brainrot-detection-api",
-  "version": "1.0.0",
-  "main": "api/jaydens/index.js",
-  "scripts": {
-    "build": "echo 'Build complete'"
-  },
-  "dependencies": {},
-  "engines": {
-    "node": "22.x"
-  }
+    "name": "jaydens-api",
+    "version": "1.0.0",
+    "description": "API for Jaydens project",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "express": "^4.17.1",
+        "body-parser": "^1.19.0"
+    }
 }

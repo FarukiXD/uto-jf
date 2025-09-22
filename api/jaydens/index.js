@@ -1,5 +1,5 @@
-// Brainrot Detection API
-// Vercel serverless function
+// Brainrot Detection API - Vercel Function
+// File: api/jaydens/index.js
 
 let brainrotData = [];
 let userData = [];
@@ -123,8 +123,8 @@ function processUserData(data) {
     }
 }
 
-// Main API handler
-export default function handler(req, res) {
+// Main handler function for Vercel
+module.exports = async (req, res) => {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -134,93 +134,84 @@ export default function handler(req, res) {
         return res.status(200).end();
     }
     
-    const { pathname } = new URL(req.url, `http://${req.headers.host}`);
-    
     try {
         // Clean old data and update secago on every request
         cleanOldData();
         updateSecAgo();
         
-        // Handle different endpoints
-        switch (pathname) {
-            case '/api/jaydens':
-                if (req.method === 'GET') {
-                    // Return all brainrot data
-                    const responseData = brainrotData.map(item => ({
-                        brainrot: item.brainrot,
-                        value: item.value,
-                        jobId: item.jobId,
-                        secago: item.secago
-                    }));
-                    
-                    return res.status(200).json(responseData);
-                }
-                break;
-                
-            case '/api/jaydens/dataSend':
-            case '/api/jaydens/datasend':
-                if (req.method === 'POST') {
-                    const result = processBrainrotData(req.body);
-                    
-                    if (result.success) {
-                        return res.status(200).json({
-                            success: true,
-                            message: result.message,
-                            totalBrainrots: result.totalBrainrots || brainrotData.length
-                        });
-                    } else {
-                        return res.status(400).json({
-                            success: false,
-                            error: result.error
-                        });
-                    }
-                }
-                break;
-                
-            case '/api/jaydens/users':
-                if (req.method === 'POST') {
-                    const result = processUserData(req.body);
-                    
-                    if (result.success) {
-                        return res.status(200).json({
-                            success: true,
-                            totalUsers: result.totalUsers
-                        });
-                    } else {
-                        return res.status(400).json({
-                            success: false,
-                            error: result.error
-                        });
-                    }
-                } else if (req.method === 'GET') {
-                    return res.status(200).json({
-                        totalUsers: userData.length,
-                        users: userData
-                    });
-                }
-                break;
-                
-            case '/api/jaydens/stats':
-                if (req.method === 'GET') {
-                    return res.status(200).json({
-                        totalBrainrots: brainrotData.length,
-                        totalUsers: userData.length,
-                        processedJobIds: processedJobIds.size,
-                        lastUpdate: new Date().toISOString()
-                    });
-                }
-                break;
-                
-            default:
-                return res.status(404).json({ 
-                    success: false, 
-                    error: 'Endpoint not found' 
-                });
+        // Handle different routes based on query parameters or method
+        const { method } = req;
+        const { endpoint } = req.query;
+        
+        // Main brainrot data endpoint
+        if (!endpoint && method === 'GET') {
+            const responseData = brainrotData.map(item => ({
+                brainrot: item.brainrot,
+                value: item.value,
+                jobId: item.jobId,
+                secago: item.secago
+            }));
+            
+            return res.status(200).json(responseData);
         }
         
-        return res.status(405).json({ 
+        // Data send endpoint
+        if (endpoint === 'dataSend' || endpoint === 'datasend') {
+            if (method === 'POST') {
+                const result = processBrainrotData(req.body);
+                
+                if (result.success) {
+                    return res.status(200).json({
+                        success: true,
+                        message: result.message,
+                        totalBrainrots: result.totalBrainrots || brainrotData.length
+                    });
+                } else {
+                    return res.status(400).json({
+                        success: false,
+                        error: result.error
+                    });
+                }
+            }
+        }
+        
+        // Users endpoint
+        if (endpoint === 'users') {
+            if (method === 'POST') {
+                const result = processUserData(req.body);
+                
+                if (result.success) {
+                    return res.status(200).json({
+                        success: true,
+                        totalUsers: result.totalUsers
+                    });
+                } else {
+                    return res.status(400).json({
+                        success: false,
+                        error: result.error
+                    });
+                }
+            } else if (method === 'GET') {
+                return res.status(200).json({
+                    totalUsers: userData.length,
+                    users: userData
+                });
+            }
+        }
+        
+        // Stats endpoint
+        if (endpoint === 'stats' && method === 'GET') {
+            return res.status(200).json({
+                totalBrainrots: brainrotData.length,
+                totalUsers: userData.length,
+                processedJobIds: processedJobIds.size,
+                lastUpdate: new Date().toISOString()
+            });
+        }
+        
+        return res.status(404).json({ 
             success: false, 
-            error: 'Method not allowed' 
+            error: 'Endpoint not found' 
         });
         
     } catch (error) {
@@ -231,12 +222,4 @@ export default function handler(req, res) {
             details: error.message 
         });
     }
-}
-
-// Auto cleanup interval (runs every 30 seconds when there are requests)
-setInterval(() => {
-    if (brainrotData.length > 0) {
-        cleanOldData();
-        updateSecAgo();
-    }
-}, 30000);
+};

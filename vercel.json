@@ -1,21 +1,13 @@
 {
-  "version": 2,
-  "functions": {
-    "index.js": {
-      "runtime": "nodejs18.x"
-    }
+  "name": "brainrot-detection-api",
+  "version": "1.0.0",
+  "description": "Advanced Brainrot Detection API for Roblox",
+  "main": "api/jaydens/index.js",
+  "scripts": {
+    "build": "echo 'Build complete'"
   },
-  "routes": [
-    {
-      "src": "/api/jaydens/(.*)",
-      "dest": "/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
+  "dependencies": {},
+  "engines": {
+    "node": "18.x"
   }
 }
